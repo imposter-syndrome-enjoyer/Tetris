@@ -33,26 +33,12 @@ namespace Tetris
         static Random random = new Random();
         internal readonly ShapeType type;
         private (int x, int y)[] _coordinates;
-        internal (int x, int y)[] Coordinates
-        {
-            set
-            {
-                if (AreCoordsValid(value))
-                {
-                    _coordinates = value;
-                }
-                else
-                {
-                    throw new ArgumentOutOfRangeException("Invalid Coordinates!");
-                }
-            }
-            get => _coordinates;
-        }
+
         internal Shape()
         {
             Array shapeTypes = Enum.GetValues(typeof(ShapeType));
             type = (ShapeType)shapeTypes.GetValue(random.Next(shapeTypes.Length))!;
-            (int x, int y) = (PlayField.Width/2,  PlayField.Height - 1);  // shape's spawn point
+            (int x, int y) = (PlayField.Width / 2, PlayField.Height - 1);  // shape's spawn point
             _coordinates = new (int, int)[4];
             switch (type)
             {
@@ -100,6 +86,26 @@ namespace Tetris
                     break;
             }
         }
+        public void Dispose()
+        {
+            _coordinates = [];
+        }
+        internal (int x, int y)[] Coordinates
+        {
+            set
+            {
+                if (AreCoordsValid(value))
+                {
+                    _coordinates = value;
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException("Invalid Coordinates!");
+                }
+            }
+            get => _coordinates;
+        }
+        
         internal bool Move(Direction direction)
         {
             (int, int)[] newCoords = ShiftSegments(this.Coordinates, direction);
@@ -210,10 +216,6 @@ namespace Tetris
                 }
             }
             return true;
-        }
-        public void Dispose()
-        {
-            _coordinates = [];
         }
     }
 }
