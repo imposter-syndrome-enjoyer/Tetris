@@ -9,7 +9,7 @@ namespace Tetris
     {
         
         private static readonly double _initialGameSpeed;
-        private static readonly double _gameAccelerationRate;
+        private static readonly double _gameSpeedIncreasePercent;
         private static double _gameSpeed;
         private static int _score;        
         private static int _highScore;
@@ -22,7 +22,7 @@ namespace Tetris
         {
             Console.CursorVisible = false;
             _initialGameSpeed = 1000;            
-            _gameAccelerationRate = 0.9;
+            _gameSpeedIncreasePercent = 0.9;
             PlayField.RowsClearedEvent += RowsClearedEventHandler;
             currentShape = new Shape();
             _nextShape = new Shape();
@@ -215,7 +215,7 @@ namespace Tetris
         {
             _score += rowsCleared;
             _level = _score / 10;
-            _gameSpeed = _initialGameSpeed * Math.Pow(_gameAccelerationRate,_level);  // game speed is accelerated by AccelerationRate for every level; a logarithmic increase
+            _gameSpeed = _initialGameSpeed * Math.Pow(_gameSpeedIncreasePercent,_level);  // game speed is accelerated by AccelerationRate for every level; a logarithmic increase
         }
 
         private static void PauseGame()
