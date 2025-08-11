@@ -297,6 +297,10 @@ namespace Tetris
             {
                 File.AppendAllText(filePath, "0");
             }
+            catch (FormatException)
+            {
+                _highScore = 0;
+            }
             Console.SetCursorPosition(23, 13);
             Console.Write(_highScore);
         }
