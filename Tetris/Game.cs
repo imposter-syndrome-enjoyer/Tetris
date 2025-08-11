@@ -55,7 +55,7 @@ namespace Tetris
             _level = 0;
             Console.Clear();
             PlayField.EraseField();
-            LoadInterface();
+            RenderScreen();
             UpdateInterface();
             while (!_isGameOver)
             {
@@ -153,31 +153,6 @@ namespace Tetris
             }
         }
 
-        private static void LoadInterface()
-        {
-            string filePath = "ScreenTemplate.txt";
-            string screenTemplate;
-            try
-            {
-                using StreamReader streamReader = new(filePath);
-                screenTemplate = streamReader.ReadToEnd();
-            }
-            catch (FileNotFoundException)
-            {
-                screenTemplate = CreateScreen();
-                File.AppendAllText(filePath, screenTemplate);
-            }
-            StringBuilder highScoreString = new();
-            string[] lines = screenTemplate.Split('\n');
-            char[] symbols = lines[13].ToCharArray();
-            for (int symbol = 23; symbol < 31; symbol++)
-            {
-                highScoreString.Append(symbols[symbol]);
-            }
-            _highScore = Int32.Parse(highScoreString.ToString());
-
-            Console.WriteLine(screenTemplate);
-        }
         internal static void UpdateInterface()
         {
             switch (_nextShape.type)
@@ -277,30 +252,14 @@ namespace Tetris
                 Console.Write("│NEW HIGH SCORE!│");
                 Console.SetCursorPosition(3, 11);
                 Console.Write("└───────────────┘");
-
-                StringBuilder screenTemplate = new StringBuilder(CreateScreen());
-                char[] scoreDigits = _score.ToString().ToCharArray();
-                int index = 478;    // starting index for High Score field
-                foreach (char digit in scoreDigits)
-                {
-                    screenTemplate[index] = digit;
-                    index++;
-                }
-                while (index < 486)   // ending index for High Score field
-                {
-                    screenTemplate[index] = ' ';    // fill with spaces if there's still space left in field
-                    index++;
-                }
-                using StreamWriter streamWriter = new StreamWriter("ScreenTemplate.txt");
-                streamWriter.Write(screenTemplate.ToString());
+                File.WriteAllText("highScore.txt", _score.ToString());
             }
-
             _isGameOver = true;
             Thread.Sleep(1000);
             Console.ReadKey();
         }
 
-        private static string CreateScreen()
+        private static void RenderScreen()
         { 
             StringBuilder stringBuilder = new();
             stringBuilder.AppendLine("┌────────────────────┬──────────┐");
@@ -316,7 +275,7 @@ namespace Tetris
             stringBuilder.AppendLine("│                    ├──────────┤");
             stringBuilder.AppendLine("│                    │High      │");
             stringBuilder.AppendLine("│                    │Score:    │");
-            stringBuilder.AppendLine("│                    │ 0        │");
+            stringBuilder.AppendLine("│                    │          │");
             stringBuilder.AppendLine("│                    ├──────────┤");
             stringBuilder.AppendLine("│                    │Controls: │");
             stringBuilder.AppendLine("│                    │Move:     │");
@@ -325,7 +284,21 @@ namespace Tetris
             stringBuilder.AppendLine("│                    │  Spacebar│");
             stringBuilder.AppendLine("│                    │Pause: Esc│");
             stringBuilder.AppendLine("└────────────────────┴──────────┘");
-            return stringBuilder.ToString();
+            Console.Write(stringBuilder.ToString());
+
+            string filePath = "highScore.txt";
+            try
+            {
+                using StreamReader streamReader = new(filePath);
+                string scoreText = streamReader.ReadToEnd();
+                _highScore = int.Parse(scoreText);
+            }
+            catch (FileNotFoundException)
+            {
+                File.AppendAllText(filePath, "0");
+            }
+            Console.SetCursorPosition(23, 13);
+            Console.Write(_highScore);
         }
     }
 
