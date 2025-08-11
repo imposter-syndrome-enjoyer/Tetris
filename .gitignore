@@ -219,6 +219,7 @@ AppPackages/
 BundleArtifacts/
 Package.StoreAssociation.xml
 _pkginfo.txt
+highScore.txt
 *.appx
 *.appxbundle
 *.appxupload
